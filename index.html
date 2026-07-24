@@ -3,276 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Estate Portal CRM</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Five Hills - Real Estate Portal & CRM</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Scrollbar for Kanban columns */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-[#0b0f19] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
 
-    <!-- Header / Navigation -->
-    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3 space-x-reverse">
-                <div class="bg-blue-600 p-2 rounded-lg text-white">
-                    <i data-lucide="building-2" class="w-6 h-6"></i>
+    <!-- TOP HEADER / NAVBAR -->
+    <header class="bg-[#111827] border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Brand Logo & Title -->
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl text-white shadow-lg shadow-blue-500/20">
+                    <i data-lucide="building-2" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg text-white leading-tight">five hills Real Estate</h1>
-                    <p class="text-xs text-slate-400">Agent Portal & CRM</p>
+                    <h1 class="font-bold text-base text-white tracking-wide leading-none">Five Hills</h1>
+                    <p class="text-[11px] text-slate-400 font-medium mt-1">Real Estate Management Portal</p>
                 </div>
             </div>
 
-            <nav class="hidden md:flex space-x-1 space-x-reverse bg-slate-900/60 p-1 rounded-xl border border-slate-700/50">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-btn active px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-white bg-blue-600">
+            <!-- Navigation Tabs -->
+            <nav class="hidden lg:flex items-center bg-[#1f2937]/60 p-1 rounded-xl border border-slate-700/50 text-sm">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-btn px-4 py-1.5 rounded-lg font-medium transition-all text-white bg-blue-600 shadow-sm">
                     Dashboard
                 </button>
-                <button onclick="switchTab('pipeline')" id="tab-pipeline" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">
+                <button onclick="switchTab('pipeline')" id="tab-pipeline" class="nav-btn px-4 py-1.5 rounded-lg font-medium transition-all text-slate-400 hover:text-white">
                     Pipeline (Kanban)
                 </button>
-                <button onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">
+                <button onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-4 py-1.5 rounded-lg font-medium transition-all text-slate-400 hover:text-white">
                     Leads Management
                 </button>
-                <button onclick="switchTab('inventory')" id="tab-inventory" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">
+                <button onclick="switchTab('inventory')" id="tab-inventory" class="nav-btn px-4 py-1.5 rounded-lg font-medium transition-all text-slate-400 hover:text-white">
                     Properties Inventory
                 </button>
             </nav>
 
-            <div class="flex items-center space-x-4 space-x-reverse">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Live Portal
-                </span>
-                <div class="w-9 h-9 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-bold text-sm text-blue-400">
-                    AG
+            <!-- Actions Right -->
+            <div class="flex items-center gap-3">
+                <label class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer transition">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                    <span>Upload CSV</span>
+                    <input type="file" accept=".csv" onchange="uploadCSV(event)" class="hidden">
+                </label>
+
+                <div class="h-6 w-[1px] bg-slate-800 hidden sm:block"></div>
+
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-xs text-white shadow-md">
+                        FH
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Workspace -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <!-- 1. DASHBOARD VIEW -->
+        <!-- ================= DASHBOARD VIEW ================= -->
         <section id="view-dashboard" class="space-y-6">
-            <!-- Stats Grid -->
+            
+            <!-- Metric Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
+                
+                <div class="bg-[#111827] border border-slate-800 p-5 rounded-2xl shadow-sm hover:border-slate-700 transition">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-xs font-medium text-slate-400">Total Records</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">134,974</h3>
+                            <p class="text-xs font-medium text-slate-400">Total Verified Records</p>
+                            <h3 class="text-2xl font-bold text-white mt-1.5">134,974</h3>
                         </div>
-                        <div class="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
+                        <div class="p-2.5 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
                             <i data-lucide="database" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-500 mt-3">Verified Property Records</p>
+                    <div class="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Synced
+                    </div>
                 </div>
 
-                <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
+                <div class="bg-[#111827] border border-slate-800 p-5 rounded-2xl shadow-sm hover:border-slate-700 transition">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-xs font-medium text-slate-400">Active Pipeline</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">12,450,000 AED</h3>
+                            <p class="text-xs font-medium text-slate-400">Active Pipeline Value</p>
+                            <h3 class="text-2xl font-bold text-white mt-1.5">12,450,000 <span class="text-xs font-normal text-slate-400">AED</span></h3>
                         </div>
-                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                        <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
                             <i data-lucide="circle-dollar-sign" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <p class="text-xs text-emerald-400 mt-3">+8% from last month</p>
+                    <div class="mt-3 text-xs text-emerald-400 font-medium">
+                        ↑ +8.4% from last month
+                    </div>
                 </div>
 
-                <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
+                <div class="bg-[#111827] border border-slate-800 p-5 rounded-2xl shadow-sm hover:border-slate-700 transition">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-medium text-slate-400">Active Leads</p>
-                            <h3 class="text-2xl font-bold text-white mt-1" id="stat-leads-count">0</h3>
+                            <h3 class="text-2xl font-bold text-white mt-1.5" id="stat-leads-count">0</h3>
                         </div>
-                        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-lg">
+                        <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
                             <i data-lucide="users" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-500 mt-3">Ready for follow-up</p>
+                    <div class="mt-3 text-xs text-slate-400">
+                        Requires follow-up
+                    </div>
                 </div>
 
-                <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
+                <div class="bg-[#111827] border border-slate-800 p-5 rounded-2xl shadow-sm hover:border-slate-700 transition">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-xs font-medium text-slate-400">Available Units</p>
-                            <h3 class="text-2xl font-bold text-white mt-1" id="stat-prop-count">0</h3>
+                            <p class="text-xs font-medium text-slate-400">Inventory Properties</p>
+                            <h3 class="text-2xl font-bold text-white mt-1.5" id="stat-prop-count">0</h3>
                         </div>
-                        <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
+                        <div class="p-2.5 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/20">
                             <i data-lucide="home" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-500 mt-3">In database</p>
+                    <div class="mt-3 text-xs text-slate-400">
+                        Available units in system
+                    </div>
                 </div>
+
             </div>
 
-            <!-- Quick Action & Recent Activity -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-slate-800/80 border border-slate-700/60 rounded-2xl p-6">
-                    <h2 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i> Quick Actions
-                    </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button onclick="openLeadModal()" class="p-4 bg-slate-900/60 hover:bg-slate-700/50 border border-slate-700/50 rounded-xl flex items-center space-x-3 space-x-reverse transition text-right">
-                            <div class="p-3 bg-blue-600/20 text-blue-400 rounded-lg">
-                                <i data-lucide="user-plus" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-white">Add New Lead</div>
-                                <div class="text-xs text-slate-400">Record a new interested buyer/tenant</div>
-                            </div>
-                        </button>
-                        <button onclick="openPropertyModal()" class="p-4 bg-slate-900/60 hover:bg-slate-700/50 border border-slate-700/50 rounded-xl flex items-center space-x-3 space-x-reverse transition text-right">
-                            <div class="p-3 bg-emerald-600/20 text-emerald-400 rounded-lg">
-                                <i data-lucide="plus-square" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-white">Add Property</div>
-                                <div class="text-xs text-slate-400">List new unit into inventory</div>
-                            </div>
-                        </button>
-                    </div>
-                </div>
+            <!-- Quick Actions Panel -->
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl p-6">
+                <h2 class="font-bold text-base text-white flex items-center gap-2 mb-4">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i> Portal Quick Actions
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="openLeadModal()" class="p-4 bg-[#1f2937]/50 hover:bg-[#1f2937] border border-slate-700/60 rounded-xl flex items-center gap-4 transition text-left group">
+                        <div class="p-3 bg-blue-600/20 text-blue-400 rounded-lg group-hover:scale-105 transition">
+                            <i data-lucide="user-plus" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm text-white">Add New Lead</div>
+                            <div class="text-xs text-slate-400 mt-0.5">Record buyer or tenant details</div>
+                        </div>
+                    </button>
 
-                <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-6">
-                    <h2 class="font-bold text-lg text-white mb-4">Portal Regions</h2>
-                    <div class="space-y-3">
-                        <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-700/40 flex justify-between items-center">
-                            <span class="text-sm font-medium text-slate-300">🏙️ Abu Dhabi</span>
-                            <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-400 border border-slate-700">42,110 Units</span>
+                    <label class="p-4 bg-[#1f2937]/50 hover:bg-[#1f2937] border border-slate-700/60 rounded-xl flex items-center gap-4 transition cursor-pointer group">
+                        <div class="p-3 bg-amber-600/20 text-amber-400 rounded-lg group-hover:scale-105 transition">
+                            <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
                         </div>
-                        <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-700/40 flex justify-between items-center">
-                            <span class="text-sm font-medium text-slate-300">🌆 Dubai DLD</span>
-                            <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-400 border border-slate-700">92,864 Units</span>
+                        <div>
+                            <div class="font-semibold text-sm text-white">Import Excel Data</div>
+                            <div class="text-xs text-slate-400 mt-0.5">Bulk upload `.csv` spreadsheet</div>
                         </div>
-                    </div>
+                        <input type="file" accept=".csv" onchange="uploadCSV(event)" class="hidden">
+                    </label>
+
+                    <button onclick="openPropertyModal()" class="p-4 bg-[#1f2937]/50 hover:bg-[#1f2937] border border-slate-700/60 rounded-xl flex items-center gap-4 transition text-left group">
+                        <div class="p-3 bg-emerald-600/20 text-emerald-400 rounded-lg group-hover:scale-105 transition">
+                            <i data-lucide="plus-square" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm text-white">Add Property Unit</div>
+                            <div class="text-xs text-slate-400 mt-0.5">List sale or rent unit</div>
+                        </div>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- 2. PIPELINE KANBAN VIEW -->
+        <!-- ================= PIPELINE VIEW ================= -->
         <section id="view-pipeline" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-white">Deals Pipeline</h2>
-                <button onclick="openLeadModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Deals Pipeline</h2>
+                    <p class="text-xs text-slate-400">Track lead status across closing stages</p>
+                </div>
+                <button onclick="openLeadModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition shadow-md">
                     <i data-lucide="plus" class="w-4 h-4"></i> Add Lead
                 </button>
             </div>
 
+            <!-- Kanban Grid -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 overflow-x-auto pb-4">
-                <!-- Column: New -->
-                <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 min-w-[250px]">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-semibold text-sm text-slate-300">New Lead</span>
+                
+                <!-- Col 1 -->
+                <div class="bg-[#111827]/80 border border-slate-800 rounded-2xl p-4 min-w-[280px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-semibold text-xs text-slate-300 uppercase tracking-wider">New Leads</span>
                         <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded-full font-bold" id="cnt-new">0</span>
                     </div>
-                    <div id="col-new" class="space-y-3 min-h-[400px]"></div>
+                    <div id="col-new" class="space-y-3 min-h-[450px]"></div>
                 </div>
 
-                <!-- Column: Contacted -->
-                <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 min-w-[250px]">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-semibold text-sm text-slate-300">Contacted / Viewing</span>
+                <!-- Col 2 -->
+                <div class="bg-[#111827]/80 border border-slate-800 rounded-2xl p-4 min-w-[280px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Contacted / Viewing</span>
                         <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-full font-bold" id="cnt-contacted">0</span>
                     </div>
-                    <div id="col-contacted" class="space-y-3 min-h-[400px]"></div>
+                    <div id="col-contacted" class="space-y-3 min-h-[450px]"></div>
                 </div>
 
-                <!-- Column: Negotiation -->
-                <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 min-w-[250px]">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-semibold text-sm text-slate-300">Offer / Negotiation</span>
+                <!-- Col 3 -->
+                <div class="bg-[#111827]/80 border border-slate-800 rounded-2xl p-4 min-w-[280px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Negotiation</span>
                         <span class="bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full font-bold" id="cnt-negotiation">0</span>
                     </div>
-                    <div id="col-negotiation" class="space-y-3 min-h-[400px]"></div>
+                    <div id="col-negotiation" class="space-y-3 min-h-[450px]"></div>
                 </div>
 
-                <!-- Column: Closed -->
-                <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 min-w-[250px]">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-semibold text-sm text-slate-300">Closed Won</span>
+                <!-- Col 4 -->
+                <div class="bg-[#111827]/80 border border-slate-800 rounded-2xl p-4 min-w-[280px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Closed Deals</span>
                         <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full font-bold" id="cnt-closed">0</span>
                     </div>
-                    <div id="col-closed" class="space-y-3 min-h-[400px]"></div>
+                    <div id="col-closed" class="space-y-3 min-h-[450px]"></div>
                 </div>
+
             </div>
         </section>
 
-        <!-- 3. LEADS TABLE VIEW -->
+        <!-- ================= LEADS VIEW ================= -->
         <section id="view-leads" class="hidden space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 class="text-xl font-bold text-white">Leads Directory</h2>
-                <button onclick="openLeadModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition">
-                    <i data-lucide="user-plus" class="w-4 h-4"></i> New Lead
+                <div>
+                    <h2 class="text-lg font-bold text-white">Leads Directory</h2>
+                    <p class="text-xs text-slate-400">All registered clients and active inquiries</p>
+                </div>
+                <button onclick="openLeadModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition shadow-md">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Add Single Lead
                 </button>
             </div>
 
-            <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl overflow-hidden shadow-sm">
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-900/60 text-slate-400 uppercase text-xs">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-[#1f2937]/50 text-slate-400 uppercase text-[11px] tracking-wider border-b border-slate-800">
                             <tr>
-                                <th class="px-6 py-4">Name</th>
-                                <th class="px-6 py-4">Contact</th>
-                                <th class="px-6 py-4">Interest</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4">Budget</th>
-                                <th class="px-6 py-4 text-right">Action</th>
+                                <th class="px-6 py-3.5">Client Name</th>
+                                <th class="px-6 py-3.5">Phone Number</th>
+                                <th class="px-6 py-3.5">Property / Unit #</th>
+                                <th class="px-6 py-3.5">Pipeline Stage</th>
+                                <th class="px-6 py-3.5">Actions</th>
+                                <th class="px-6 py-3.5 text-right">Remove</th>
                             </tr>
                         </thead>
-                        <tbody id="leads-table-body" class="divide-y divide-slate-700/50">
-                            <!-- Injected by JS -->
-                        </tbody>
+                        <tbody id="leads-table-body" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- 4. INVENTORY VIEW -->
+        <!-- ================= INVENTORY VIEW ================= -->
         <section id="view-inventory" class="hidden space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 class="text-xl font-bold text-white">Properties Inventory</h2>
-                <button onclick="openPropertyModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Properties Inventory</h2>
+                    <p class="text-xs text-slate-400">Managed listings and available units</p>
+                </div>
+                <button onclick="openPropertyModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition shadow-md">
                     <i data-lucide="plus-square" class="w-4 h-4"></i> Add Property
                 </button>
             </div>
 
-            <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Injected by JS -->
-            </div>
+            <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
         </section>
 
     </main>
 
+    <!-- MODAL: HOT LEAD CARD POPUP -->
+    <div id="modal-hotlead" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-amber-500/40 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative">
+            <div class="flex items-center gap-2.5 text-amber-400 mb-4">
+                <div class="p-2 bg-amber-500/10 rounded-xl">
+                    <i data-lucide="flame" class="w-6 h-6 fill-amber-400"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Hot Lead Summary</h3>
+                    <p class="text-[11px] text-slate-400">Quick contact card</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3 bg-[#1f2937]/60 p-4 rounded-xl border border-slate-700/60">
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Client Name</p>
+                    <p class="text-sm font-bold text-white mt-0.5" id="hotlead-name">-</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Contact Phone Number</p>
+                    <p class="text-sm font-bold text-emerald-400 mt-0.5" id="hotlead-phone">-</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Property / Unit Interest</p>
+                    <p class="text-sm font-bold text-amber-300 mt-0.5" id="hotlead-prop">-</p>
+                </div>
+            </div>
+
+            <div class="mt-5 flex gap-2">
+                <a id="hotlead-wa-btn" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition shadow-md">
+                    <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp Client
+                </a>
+                <button onclick="closeHotLeadModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: ADD LEAD -->
-    <div id="modal-lead" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-xl">
-            <h3 class="text-lg font-bold text-white mb-4">Add New Lead</h3>
+    <div id="modal-lead" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4">Add New Lead</h3>
             <form onsubmit="saveLead(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
-                    <input type="text" id="lead-name" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <input type="text" id="lead-name" required class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Phone Number</label>
-                    <input type="tel" id="lead-phone" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Phone Number (with country code)</label>
+                    <input type="tel" id="lead-phone" placeholder="971500000000" required class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Property Interest</label>
-                    <input type="text" id="lead-interest" placeholder="e.g. 2BR Apartment - Dubai Marina" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Property / Unit #</label>
+                    <input type="text" id="lead-prop" placeholder="Unit 1204 - Saadiyat" required class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Budget (AED)</label>
-                    <input type="number" id="lead-budget" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Stage</label>
-                    <select id="lead-stage" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Pipeline Stage</label>
+                    <select id="lead-stage" class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                         <option value="new">New Lead</option>
                         <option value="contacted">Contacted / Viewing</option>
                         <option value="negotiation">Offer / Negotiation</option>
@@ -280,90 +345,91 @@
                     </select>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeLeadModal()" class="px-4 py-2 text-sm text-slate-400 hover:text-white">Cancel</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-medium">Save Lead</button>
+                    <button type="button" onclick="closeLeadModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-semibold">Save Lead</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL: ADD PROPERTY -->
-    <div id="modal-property" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-xl">
-            <h3 class="text-lg font-bold text-white mb-4">Add New Property</h3>
+    <div id="modal-property" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4">Add Property Listing</h3>
             <form onsubmit="saveProperty(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Title</label>
-                    <input type="text" id="prop-title" required placeholder="e.g. Luxury Sea View Villa" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Property Title</label>
+                    <input type="text" id="prop-title" required placeholder="Luxury Sea View Villa" class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Location</label>
-                    <input type="text" id="prop-location" required placeholder="e.g. Palm Jumeirah, Dubai" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <input type="text" id="prop-location" required placeholder="Palm Jumeirah, Dubai" class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Price (AED)</label>
-                    <input type="number" id="prop-price" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <input type="number" id="prop-price" required class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Type</label>
-                    <select id="prop-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Listing Type</label>
+                    <select id="prop-type" class="w-full bg-[#1f2937] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
                         <option value="Sale">For Sale</option>
                         <option value="Rent">For Rent</option>
                     </select>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closePropertyModal()" class="px-4 py-2 text-sm text-slate-400 hover:text-white">Cancel</button>
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-medium">Add Property</button>
+                    <button type="button" onclick="closePropertyModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white">Cancel</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-semibold">Save Property</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Application Script -->
+    <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // Sample State
         let leads = [
-            { id: 1, name: "Ali Al-Mansi", phone: "+971 50 111 2233", interest: "3BR Villa - Saadiyat", budget: 4500000, stage: "negotiation" },
-            { id: 2, name: "Sarah Ahmed", phone: "+971 55 444 5566", interest: "1BR Apartment - Downtown", budget: 1200000, stage: "contacted" },
-            { id: 3, name: "Michael Smith", phone: "+971 52 999 8877", interest: "Penthouse - Marina", budget: 8900000, stage: "new" }
+            { id: 1, name: "Ali Al-Mansi", phone: "971501112233", propertyNum: "Unit 402 - Saadiyat", stage: "negotiation" },
+            { id: 2, name: "Sarah Ahmed", phone: "971554445566", propertyNum: "Villa 12 - Palm Jumeirah", stage: "contacted" },
+            { id: 3, name: "Michael Smith", phone: "971529998877", propertyNum: "Penthouse 01 - Marina", stage: "new" }
         ];
 
         let properties = [
-            { id: 101, title: "Marina Bay Luxury Apartment", location: "Dubai Marina", price: 2100000, type: "Sale", status: "Available" },
-            { id: 102, title: "Saadiyat Beachfront Villa", location: "Abu Dhabi", price: 6500000, type: "Sale", status: "Available" }
+            { id: 101, title: "Marina Bay Luxury Apartment", location: "Dubai Marina", price: 2100000, type: "Sale" },
+            { id: 102, title: "Saadiyat Beachfront Villa", location: "Abu Dhabi", price: 6500000, type: "Sale" }
         ];
 
-        // Init App
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             renderAll();
         });
 
-        // Tab Switching
         function switchTab(tabId) {
             document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
                 btn.classList.add('text-slate-400');
             });
 
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.add('bg-blue-600', 'text-white');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
             activeBtn.classList.remove('text-slate-400');
         }
 
-        // Render Functions
         function renderAll() {
             renderStats();
             renderPipeline();
             renderLeadsTable();
             renderInventory();
+            lucide.createIcons();
         }
 
         function renderStats() {
             document.getElementById('stat-leads-count').innerText = leads.length;
             document.getElementById('stat-prop-count').innerText = properties.length;
+        }
+
+        function cleanPhone(phone) {
+            return String(phone).replace(/[^0-9]/g, '');
         }
 
         function renderPipeline() {
@@ -375,14 +441,22 @@
                 
                 count.innerText = filtered.length;
                 col.innerHTML = filtered.map(lead => `
-                    <div class="bg-slate-800 border border-slate-700/80 p-4 rounded-xl shadow-sm space-y-2">
+                    <div class="bg-[#1f2937]/60 border border-slate-800 p-3.5 rounded-xl space-y-2.5 hover:border-slate-700 transition">
                         <div class="flex justify-between items-start">
-                            <span class="font-bold text-sm text-white">${lead.name}</span>
-                            <span class="text-xs bg-slate-900 text-blue-400 px-2 py-0.5 rounded border border-slate-700">${Number(lead.budget).toLocaleString()} AED</span>
+                            <span class="font-bold text-xs text-white">${lead.name}</span>
+                            <div class="flex items-center gap-1">
+                                <button onclick="showHotLead(${lead.id})" title="Hot Lead Info" class="p-1 bg-amber-500/10 text-amber-400 hover:bg-amber-500 hover:text-slate-900 rounded-lg transition">
+                                    <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <a href="https://wa.me/${cleanPhone(lead.phone)}?text=Hello%20${encodeURIComponent(lead.name)},%20regarding%20your%20property%20interest%20${encodeURIComponent(lead.propertyNum)}" target="_blank" title="Send WhatsApp" class="p-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg transition">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                                </a>
+                            </div>
                         </div>
-                        <p class="text-xs text-slate-400">${lead.interest}</p>
-                        <div class="pt-2 flex justify-end gap-1">
-                            ${stage !== 'closed' ? `<button onclick="moveLead(${lead.id}, '${getNextStage(stage)}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded">Advance →</button>` : ''}
+                        <p class="text-[11px] text-amber-300 font-medium">📍 ${lead.propertyNum}</p>
+                        <p class="text-[11px] text-slate-400">📞 ${lead.phone}</p>
+                        <div class="pt-1 flex justify-end">
+                            ${stage !== 'closed' ? `<button onclick="moveLead(${lead.id}, '${getNextStage(stage)}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-lg border border-slate-700 transition">Advance →</button>` : ''}
                         </div>
                     </div>
                 `).join('');
@@ -405,16 +479,25 @@
         function renderLeadsTable() {
             const tbody = document.getElementById('leads-table-body');
             tbody.innerHTML = leads.map(l => `
-                <tr class="hover:bg-slate-800/40 border-b border-slate-700/50">
-                    <td class="px-6 py-4 font-medium text-white">${l.name}</td>
-                    <td class="px-6 py-4 text-slate-400">${l.phone}</td>
-                    <td class="px-6 py-4">${l.interest}</td>
-                    <td class="px-6 py-4">
-                        <span class="capitalize text-xs px-2.5 py-1 rounded-full font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">${l.stage}</span>
+                <tr class="hover:bg-[#1f2937]/30 transition">
+                    <td class="px-6 py-3.5 font-medium text-white">${l.name}</td>
+                    <td class="px-6 py-3.5 text-slate-400">${l.phone}</td>
+                    <td class="px-6 py-3.5 text-amber-300 font-medium">${l.propertyNum}</td>
+                    <td class="px-6 py-3.5">
+                        <span class="capitalize text-[10px] px-2.5 py-1 rounded-full font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">${l.stage}</span>
                     </td>
-                    <td class="px-6 py-4 text-white font-semibold">${Number(l.budget).toLocaleString()} AED</td>
-                    <td class="px-6 py-4 text-right">
-                        <button onclick="deleteLead(${l.id})" class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                    <td class="px-6 py-3.5">
+                        <div class="flex items-center gap-2">
+                            <button onclick="showHotLead(${l.id})" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 hover:bg-amber-500 hover:text-slate-900 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition">
+                                <i data-lucide="flame" class="w-3 h-3"></i> Hot Lead
+                            </button>
+                            <a href="https://wa.me/${cleanPhone(l.phone)}?text=Hello%20${encodeURIComponent(l.name)},%20regarding%20your%20property%20interest%20${encodeURIComponent(l.propertyNum)}" target="_blank" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 transition">
+                                <i data-lucide="message-square" class="w-3 h-3"></i> WhatsApp
+                            </a>
+                        </div>
+                    </td>
+                    <td class="px-6 py-3.5 text-right">
+                        <button onclick="deleteLead(${l.id})" class="text-red-400 hover:text-red-300 text-[11px]">Delete</button>
                     </td>
                 </tr>
             `).join('');
@@ -423,26 +506,76 @@
         function renderInventory() {
             const grid = document.getElementById('properties-grid');
             grid.innerHTML = properties.map(p => `
-                <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl overflow-hidden shadow-sm">
-                    <div class="h-32 bg-slate-900 border-b border-slate-700/60 flex items-center justify-center text-slate-600">
-                        <i data-lucide="image" class="w-8 h-8"></i>
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition">
+                    <div class="h-32 bg-[#1f2937]/40 border-b border-slate-800 flex items-center justify-center text-slate-600">
+                        <i data-lucide="building" class="w-8 h-8"></i>
                     </div>
-                    <div class="p-5 space-y-3">
+                    <div class="p-4 space-y-2">
                         <div class="flex justify-between items-start">
-                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-medium border border-emerald-500/20">For ${p.type}</span>
-                            <span class="font-bold text-lg text-white">${Number(p.price).toLocaleString()} AED</span>
+                            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-semibold border border-emerald-500/20">For ${p.type}</span>
+                            <span class="font-bold text-base text-white">${Number(p.price).toLocaleString()} AED</span>
                         </div>
-                        <h3 class="font-bold text-slate-100">${p.title}</h3>
+                        <h3 class="font-bold text-sm text-slate-100">${p.title}</h3>
                         <p class="text-xs text-slate-400 flex items-center gap-1">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> ${p.location}
+                            <i data-lucide="map-pin" class="w-3 h-3"></i> ${p.location}
                         </p>
                     </div>
                 </div>
             `).join('');
-            lucide.createIcons();
         }
 
-        // Modals & Handlers
+        // Hot Lead Modal
+        function showHotLead(id) {
+            const lead = leads.find(l => l.id === id);
+            if(!lead) return;
+            document.getElementById('hotlead-name').innerText = lead.name;
+            document.getElementById('hotlead-phone').innerText = lead.phone;
+            document.getElementById('hotlead-prop').innerText = lead.propertyNum;
+            
+            const waBtn = document.getElementById('hotlead-wa-btn');
+            waBtn.href = `https://wa.me/${cleanPhone(lead.phone)}?text=Hello%20${encodeURIComponent(lead.name)},%20regarding%20property%20${encodeURIComponent(lead.propertyNum)}`;
+            
+            document.getElementById('modal-hotlead').classList.remove('hidden');
+        }
+
+        function closeHotLeadModal() {
+            document.getElementById('modal-hotlead').classList.add('hidden');
+        }
+
+        // CSV Upload Handler
+        function uploadCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                
+                let addedCount = 0;
+                lines.forEach((line, index) => {
+                    if (index === 0 || !line.trim()) return;
+                    const cols = line.split(',');
+                    
+                    if (cols.length >= 2) {
+                        leads.push({
+                            id: Date.now() + index,
+                            name: cols[0]?.trim() || "Client",
+                            phone: cols[1]?.trim() || "",
+                            propertyNum: cols[2]?.trim() || "General Unit",
+                            stage: "new"
+                        });
+                        addedCount++;
+                    }
+                });
+
+                alert(`Successfully imported ${addedCount} leads!`);
+                renderAll();
+            };
+            reader.readAsText(file);
+        }
+
+        // Modals
         function openLeadModal() { document.getElementById('modal-lead').classList.remove('hidden'); }
         function closeLeadModal() { document.getElementById('modal-lead').classList.add('hidden'); }
         function openPropertyModal() { document.getElementById('modal-property').classList.remove('hidden'); }
@@ -454,8 +587,7 @@
                 id: Date.now(),
                 name: document.getElementById('lead-name').value,
                 phone: document.getElementById('lead-phone').value,
-                interest: document.getElementById('lead-interest').value,
-                budget: document.getElementById('lead-budget').value,
+                propertyNum: document.getElementById('lead-prop').value,
                 stage: document.getElementById('lead-stage').value
             });
             closeLeadModal();
@@ -469,8 +601,7 @@
                 title: document.getElementById('prop-title').value,
                 location: document.getElementById('prop-location').value,
                 price: document.getElementById('prop-price').value,
-                type: document.getElementById('prop-type').value,
-                status: 'Available'
+                type: document.getElementById('prop-type').value
             });
             closePropertyModal();
             renderAll();
